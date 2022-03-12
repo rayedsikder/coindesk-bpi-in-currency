@@ -1,6 +1,6 @@
 import express from "express";
 import moment from "moment";
-
+import fetch from "node-fetch";
 
 const router = express.Router();
 
@@ -14,11 +14,21 @@ function checkCurrencyParameter(currencyCode) {
                 message: "Undefined or null parameters"
             })
         }
-        else if(currencyCode.toUpperCase() === ("USD" || "GBR" || "EUR")) {
+        else if(currencyCode.toUpperCase() === "USD") {
             resolve({
                 message: "Success!"
             })
         }
+        else if(currencyCode.toUpperCase() === "EUR") {
+            resolve({
+                message: "Success!"
+            })
+        }
+        else if(currencyCode.toUpperCase() === "GBP") {
+            resolve({
+                message: "Success!"
+            })
+        }                
         else {
             reject({
                 message: "Unsupported or invalid currency code"
@@ -27,37 +37,41 @@ function checkCurrencyParameter(currencyCode) {
     })
 }
 
-function getBitcoinPriceForCurrency(currencyCode) {
-    const data = fetch(`https://api.coindesk.com/v1/bpi/currentprice/${currencyCode}.json`)
-    const jsonObj = data.json("")
+async function getBitcoinPriceForCurrency(currencyCode) {
+    const data = await fetch(`https://api.coindesk.com/v1/bpi/currentprice/${currencyCode}.json`)
+    const jsonObj = await data.json();
     const rateFloat = jsonObj.bpi[currencyCode.toUpperCase()].rate_float;
+    //console.log(jsonObj);
     return rateFloat;
 }
 
-function getMinMaxPrice(currencyCode) {
-    const data = fetch(`https://api.coindesk.com/v1/bpi/historical/close.json?start=${currentDate.format("YYYY-MM-DD")}&end=${priorDate.format("YYYY-MM-DD")}&currency=${currencyCode}`);
-    const jsonObj = data.json();
+async function getMinMaxPrice(currencyCode) {
+    const data = await fetch(`https://api.coindesk.com/v1/bpi/historical/close.json?start=${priorDate.format("YYYY-MM-DD")}&end=${currentDate.format("YYYY-MM-DD")}&currency=${currencyCode}`);
+    const jsonObj = await data.json();
     let bpiValues = [];
     for (const property in jsonObj.bpi) {
         bpiValues.push(jsonObj.bpi[property]);
       }
     const maxBPI = Math.max(...bpiValues);
     const minBPI = Math.min(...bpiValues);
-    return maxBPI, minBPI;
+    
+    return [maxBPI, minBPI];
 }
 
 router.get("/", (req, res) => {
-    const currencyCode = req.body;
-    checkCurrencyParameter(currencyCode).then((message) => {
-        const price = getBitcoinPriceForCurrency(currencyCode);
-        const maxMinPrice = getMinMaxPrice(currencyCode);
+    const { currencyCode } = req.query;
+    //console.log(currencyCode);
+
+    checkCurrencyParameter(currencyCode).then(async (message) => {
+        const price = await getBitcoinPriceForCurrency(currencyCode);
+        const maxMinPrice = await getMinMaxPrice(currencyCode);
         const responseData = {
             currency: currencyCode.toUpperCase(),
             bpi: price,
             maximumBPI: maxMinPrice[0],
             minimumBPI: maxMinPrice[1]
         }
-        console.log("Success" + message);
+        //console.log("Success" + message);
         res.send(responseData);
     }).catch((error) => {
         res.status(400);
