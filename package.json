@@ -1,0 +1,28 @@
+{
+  "name": "coindesk-bpi-in-currency",
+  "version": "1.0.0",
+  "description": "An API to get current, maximum and minimum Bitcoin price index in USD, EUR &amp; GBR",
+  "main": "index.js",
+  "type": "module",
+  "scripts": {
+    "start": "nodemon index.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/rayedsikder/coindesk-bpi-in-currency.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/rayedsikder/coindesk-bpi-in-currency/issues"
+  },
+  "homepage": "https://github.com/rayedsikder/coindesk-bpi-in-currency#readme",
+  "dependencies": {
+    "dotenv": "^16.0.0",
+    "express": "^4.17.3"
+  },
+  "devDependencies": {
+    "nodemon": "^2.0.15"
+  }
+}
