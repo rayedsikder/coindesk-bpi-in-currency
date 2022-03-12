@@ -41,7 +41,6 @@ async function getBitcoinPriceForCurrency(currency) {
     const data = await fetch(`https://api.coindesk.com/v1/bpi/currentprice/${currency}.json`)
     const jsonObj = await data.json();
     const rateFloat = jsonObj.bpi[currency.toUpperCase()].rate_float;
-    //console.log(jsonObj);
     return rateFloat;
 }
 
@@ -70,7 +69,6 @@ router.get("/", (req, res) => {
             maximumBPI: maxMinPrice[0],
             minimumBPI: maxMinPrice[1]
         }
-        //console.log("Success" + message);
         res.send(responseData);
     }).catch((error) => {
         res.status(400);
